@@ -1,6 +1,361 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>My Web Page</title>
-    <h1>Welcome to My Web Page</h1>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>sid-blend</title>
+<style>
+  :root {
+    --bg: #0b0b0f;
+    --panel: #14141b;
+    --text: #f2f2f5;
+    --muted: #8a8a96;
+    --accent: #f2f2f5;
+    --border: #1f1f2a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /*navbar*/
+  nav {
+    position: sticky; top: 0; left: 0; width: 100%; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(11, 11, 15, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: opacity 0.3s ease, transform 0.25s ease;
+  }
+
+  nav.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+  }
+  .logo img {
+    display: block;
+    max-height: 40px;
+    width: auto;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    color: var(--muted);
+    font-size: 0.95rem;
+    transition: color 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-links a:hover{ color: var(--text); }
+
+  /*pages*/
+  .page { display: none; padding: 4rem 1rem; max-width: 1280px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /*home*/
+  .home {
+    text-align: center;
+    padding: 3rem 0 3rem;
+  }
+  .home h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 1.25rem;
+  }
+  .home h1 .accent {
+    background: var(--text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .home p {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 3rem 0 1.5rem;
+    letter-spacing: -0.02em;
+    text-decoration: underline;
+    text-underline-offset: 17px;
+    text-decoration-thickness: 4px;
+  }
+
+  /*gallery grid*/
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  .tile {
+    aspect-ratio: 1 / 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    position: relative;
+  }
+  .tile:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: auto;
+  }
+
+  @media (max-width: 900px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .gallery { grid-template-columns: 1fr; } }
+
+  /*about*/
+  .about-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 720px;
+    margin: 2rem auto 4rem;
+  }
+  .about-card h2 { font-size: 2rem; margin-bottom: 1rem; letter-spacing: -0.02em; }
+  .about-card p { color: var(--text); margin-bottom: 1rem; }
+
+  /*lightbox */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; animation: fade 0.25s ease; }
+  .lightbox.open img { animation: zoomIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .lightbox img {
+    max-width: 90vw; max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+
+  .lightbox-content {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 1rem;
+  }
+
+  #lightbox-caption {
+    max-width: 800px;
+    text-align: left;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  /*animations for the startup thing*/
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes zoomIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  nav { animation: slideDown 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .reveal { opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .home h1 { animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both; }
+  .home p  { animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.25s both; }
+  #gallery-title { animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s both; }
+  .tile { opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  #about-title, .about-card { animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+  html { scroll-behavior: smooth; }
+
+</style>
 </head>
+<body>
+
+<nav>
+  <div class="logo"><a data-target="top"><img id="logo" src="logo-white.png"></a></div>
+  <div class="nav-links">
+    <a data-target="top">home</a>
+    <a data-target="about">about</a>
+  </div>
+</nav>
+
+<main>
+  <section class="page active">
+    <div class="home">
+      <h1>welcome</h1>
+      <p>below is a brief collection of my work from the past 5 years</p>
+      <p>i hope you enjoy!</p>
+    </div>
+
+    <h2 class="section-title" id="gallery-title">gallery</h2>
+    <div class="gallery" id="gallery"></div>
+
+    <h2 class="section-title" id="about-title">about me</h2>
+    <div class="about-card" id="about">
+      <p>unfinished</p>
+    </div>
+  </section>
+</main>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-content">
+    <img id="lightbox-img" alt="" />
+    <div id="lightbox-caption"></div>
+  </div>
+</div>
+
+<script>
+    // images
+    // images + captions
+  const images = [
+    "renders/serene.jpg"
+  ];
+
+  const captions = [
+    "serene. inspired by the canadian alps. 06/23/2024"
+  ];
+
+  // disable right click on images
+  document.addEventListener('contextmenu', (e) => {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+    }
+  });
+
+  const gallery = document.getElementById('gallery');
+
+  images.forEach((src, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.style.animationDelay = (0.5 + i * 0.08) + 's';
+
+    tile.innerHTML = `
+      <img
+        src="${src}"
+        alt="Render ${i + 1}"
+        loading="lazy"
+        draggable="false"
+      />
+    `;
+
+    tile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openLightbox(src, captions[i]);
+    });
+
+    gallery.appendChild(tile);
+  });
+
+  // lightbox
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const lbCaption = document.getElementById('lightbox-caption');
+  const navbar = document.querySelector('nav');
+
+  function openLightbox(src, caption) {
+    lbImg.src = src;
+    lbCaption.textContent = caption;
+
+    // requestAnimationFrame(() => {
+    //   navbar.classList.add('hidden');
+    // });
+
+    // navbar.classList.add('hidden');
+
+    lb.classList.add('open');
+  }
+
+  function closeLightbox() {
+    lb.classList.remove('open');
+
+    // requestAnimationFrame(() => {
+    //   navbar.classList.remove('hidden');
+    // });
+
+    // navbar.classList.remove('hidden');
+  }
+
+  lb.addEventListener('click', (e) => {
+    if (e.target === lb) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeLightbox();
+    }
+  });
+
+  // nav stuff smooth scroll to sections
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const target = link.dataset.target;
+
+      if (target === 'top') {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } else {
+        document.getElementById(target)?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Active nav state based on scroll position
+  const aboutEl = document.getElementById('about');
+
+  window.addEventListener('scroll', () => {
+    const aboutTop = aboutEl.getBoundingClientRect().top;
+    const onAbout = aboutTop < window.innerHeight * 0.5;
+
+    navLinks.forEach(a =>
+      a.classList.toggle(
+        'active',
+        (onAbout && a.dataset.target === 'about') ||
+        (!onAbout && a.dataset.target === 'top')
+      )
+    );
+  });
+
+</script>
+
+</body>
 </html>
