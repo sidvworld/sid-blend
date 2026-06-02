@@ -237,6 +237,15 @@
     .gallery {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .about-section {
+      flex-direction: column;
+    }
+
+    .about-section img {
+      width: 100%;
+      height: 280px;
+    }
   }
 
   @media (max-width: 768px) {
@@ -268,28 +277,50 @@
       font-size: 2.75rem;
     }
   }
-  /*about*/
+  /* about */
   .about-card,
   .photogrammetry-card {
     background: rgba(255,255,255,0.02);
     border: 1px solid rgba(255,255,255,0.06);
-
     border-radius: 16px;
-
     padding: 2.5rem;
-
-    max-width: 700px;
-
+    max-width: 100%;
     backdrop-filter: blur(12px);
   }
-  .about-card h2 { font-size: 2rem; margin-bottom: 1rem; letter-spacing: -0.02em; }
-  .about-card p { color: var(--text); margin-bottom: 1rem; }
-  .about-section img {
-    max-width: 90vw; max-height: 90vh;
-    border-radius: 12px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+
+  .about-section {
+    display: flex;
+    gap: 2rem;
+    align-items: stretch;
   }
 
+  .about-card {
+    flex: 4;
+  }
+
+  .about-card h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .about-card p {
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  .about-section img {
+    flex: 2;
+    min-width: 220px;
+
+    object-fit: cover;
+
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+
+    flex-shrink: 0;
+  }
   /* photogrammetry */
   .photogrammetry-card p { color: var(--text); margin-bottom: 1rem; }
 
@@ -374,13 +405,32 @@
     <h2 class="section-title" id="about-title">about me</h2>
     <div class="about-section">
       <div class="about-card" id="about">
-        <p>unfinished</p>
+        <p>
+          hi, i'm siddharth. ever since i was young, i've been fascinated by landscape photography.
+          during quarantine in 2021, when leaving the house was sparse, i sought to bring Earth's landscape in my own way back at home.
+          i began taking on 3D modeling commissions in Blender for games and independent projects.
+          i spent most of my time creating realistic environments and modeling in-game assets, gradually teaching myself new techniques through experience.
+
+          <br>
+          <br>
+          at some point it became normalized to buy a $50 Blender plugin to be efficient.
+          when professional software and asset libraries became difficult to afford, i started building simple tools and plugins to streamline my own work.
+          this led me to research photogrammetry, the process of translating 2D real-world images into 3d models.
+          after months of iteration, i developed a gaussian splatting-based model that allowed me to generate realistic assets from just a handful of photographs.
+          many of the rocks, plants, and natural details in my projects today come directly from the world around me.
+
+          <br>  
+          <br>
+          so beyond creating art, i hope my work shows others that meaningful projects don't always require expensive tools or resources.
+          with enough curiosity and tenacity, some of the most valuable skills come from working around limitations rather than avoiding them.
+        </p>
       </div>
+      <img src="me.png" alt="about photo" draggable="false" />
     </div>
 
     <h2 class="section-title" id="photogrammetry-title">photogrammetry software</h2>
     <div class="photogrammetry-card" id="photogrammetry">
-      <p>unfinished</p>
+      <p><br><br><br><br><br><br><br><br><br><br><br><br></p>
     </div>
   </section>
 </main>
@@ -490,19 +540,22 @@
           behavior: 'smooth'
         });
       } else {
-        document.getElementById(target)?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+          const el = document.getElementById(target);
+          if (el) {
+            const navHeight = document.querySelector('nav').offsetHeight;
+            const top = el.getBoundingClientRect().top + window.scrollY - navHeight - 75;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        }
       }
-    });
+    );
   });
 
   // active nav state based on scroll position
   const sections = [
     { id: "top", element: document.querySelector(".home") },
-    { id: "about", element: document.getElementById("about") },
-    { id: "photogrammetry", element: document.getElementById("photogrammetry") }
+    { id: "about", element: document.getElementById("about-title") },
+    { id: "photogrammetry", element: document.getElementById("photogrammetry-title") }
   ];
 
   window.addEventListener("scroll", () => {
