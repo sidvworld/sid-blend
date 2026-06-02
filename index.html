@@ -15,6 +15,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
@@ -22,17 +23,31 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
+
   a { color: inherit; text-decoration: none; }
 
   /*navbar*/
   nav {
-    position: sticky; top: 0; left: 0; width: 100%; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 2rem;
-    background: rgba(11, 11, 15, 0.8);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    transition: opacity 0.3s ease, transform 0.25s ease;
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 1rem 3rem;
+
+    background: rgba(11, 11, 15, 0.72);
+    backdrop-filter: blur(20px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+
+    transition:
+      opacity 0.3s ease,
+      transform 0.25s ease;
   }
 
   nav.hidden {
@@ -58,21 +73,84 @@
   .nav-links a {
     color: var(--muted);
     font-size: 0.95rem;
-    transition: color 0.2s;
+    transition: color 0.25s ease;
     cursor: pointer;
     position: relative;
   }
-  .nav-links a:hover{ color: var(--text); }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--text);
+    transform: translateX(-50%);
+    transition: width 0.25s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+  }
+
+  .nav-links a:hover::after,
+  .nav-links a.active::after {
+    width: 100%;
+  }
+
+  .nav-links a.active {
+    color: var(--text);
+  }
 
   /*pages*/
-  .page { display: none; padding: 4rem 1rem; max-width: 1280px; margin: 0 auto; }
+  .page {
+    display: none;
+    padding: 5rem 2rem;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
   .page.active { display: block; }
 
   /*home*/
   .home {
     text-align: center;
-    padding: 3rem 0 3rem;
+
+    min-height: 45vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 2rem 0 4rem;
+
+    position: relative;
   }
+
+  .home::before {
+    content: "";
+    position: absolute;
+
+    width: 1000px;
+    height: 1000px;
+
+    top: -700px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    background:
+      radial-gradient(
+        circle,
+        rgba(255,255,255,0.05) 0%,
+        rgba(255,255,255,0.02) 30%,
+        transparent 70%
+      );
+
+    pointer-events: none;
+    z-index: -1;
+  }
+
   .home h1 {
     font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 800;
@@ -86,21 +164,31 @@
     background-clip: text;
     color: transparent;
   }
+
   .home p {
     font-size: 1.15rem;
     color: var(--muted);
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
   }
 
   .section-title {
     font-size: 1.75rem;
     font-weight: 700;
-    margin: 3rem 0 1.5rem;
+    margin: 5rem 0 2rem;
     letter-spacing: -0.02em;
-    text-decoration: underline;
-    text-underline-offset: 17px;
-    text-decoration-thickness: 4px;
+    position: relative;
+  }
+
+  .section-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -12px;
+    width: 60px;
+    height: 4px;
+    background: var(--text);
+    border-radius: 999px;
   }
 
   /*gallery grid*/
@@ -112,15 +200,32 @@
   .tile {
     aspect-ratio: 1 / 1;
     background: var(--panel);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.25s ease, border-color 0.25s ease;
     position: relative;
+
+    transition:
+      transform 0.35s cubic-bezier(.2,.8,.2,1),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
   }
-  .tile:hover { transform: translateY(-4px); border-color: var(--accent); }
-  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .tile:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  }
+
+  .tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+
+    transition: transform 0.6s ease;
+  }
 
   img {
     -webkit-user-drag: none;
@@ -128,20 +233,65 @@
     pointer-events: auto;
   }
 
-  @media (max-width: 900px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 500px) { .gallery { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) {
+    .gallery {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
 
+  @media (max-width: 768px) {
+
+    nav {
+      padding: 1rem 1.5rem;
+    }
+
+    .nav-links {
+      gap: 1rem;
+    }
+
+    .page {
+      padding: 3rem 1.25rem;
+    }
+
+    .about-card,
+    .photogrammetry-card {
+      padding: 1.75rem;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .gallery {
+      grid-template-columns: 1fr;
+    }
+
+    .home h1 {
+      font-size: 2.75rem;
+    }
+  }
   /*about*/
-  .about-card {
-    background: var(--panel);
-    border: 1px solid var(--border);
+  .about-card,
+  .photogrammetry-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+
     border-radius: 16px;
+
     padding: 2.5rem;
-    max-width: 720px;
-    margin: 2rem auto 4rem;
+
+    max-width: 700px;
+
+    backdrop-filter: blur(12px);
   }
   .about-card h2 { font-size: 2rem; margin-bottom: 1rem; letter-spacing: -0.02em; }
   .about-card p { color: var(--text); margin-bottom: 1rem; }
+  .about-section img {
+    max-width: 90vw; max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+
+  /* photogrammetry */
+  .photogrammetry-card p { color: var(--text); margin-bottom: 1rem; }
 
   /*lightbox */
   .lightbox {
@@ -157,7 +307,7 @@
   .lightbox.open img { animation: zoomIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .lightbox img {
     max-width: 90vw; max-height: 90vh;
-    border-radius: 12px;
+    /* border-radius: 12px; */
     box-shadow: 0 30px 80px rgba(0,0,0,0.6);
   }
 
@@ -169,11 +319,11 @@
   }
 
   #lightbox-caption {
-    max-width: 800px;
+    max-width: 700px;
     text-align: left;
     color: var(--muted);
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   /*animations for the startup thing*/
@@ -207,6 +357,7 @@
   <div class="nav-links">
     <a data-target="top">home</a>
     <a data-target="about">about</a>
+    <a data-target="photogrammetry">photogrammetry</a>
   </div>
 </nav>
 
@@ -215,14 +366,20 @@
     <div class="home">
       <h1>welcome</h1>
       <p>below is a brief collection of my work from the past 5 years</p>
-      <p>i hope you enjoy!</p>
     </div>
 
     <h2 class="section-title" id="gallery-title">gallery</h2>
     <div class="gallery" id="gallery"></div>
 
     <h2 class="section-title" id="about-title">about me</h2>
-    <div class="about-card" id="about">
+    <div class="about-section">
+      <div class="about-card" id="about">
+        <p>unfinished</p>
+      </div>
+    </div>
+
+    <h2 class="section-title" id="photogrammetry-title">photogrammetry software</h2>
+    <div class="photogrammetry-card" id="photogrammetry">
       <p>unfinished</p>
     </div>
   </section>
@@ -239,11 +396,13 @@
     // images
     // images + captions
   const images = [
-    "renders/serene.jpg"
+    "renders/serene-downsized.jpg",
+    "renders/dense-downsized.jpg"
   ];
 
   const captions = [
-    "serene. inspired by the canadian alps. 06/23/2024"
+    "serene. inspired by the canadian alps. 06/23/2024",
+    "dense. 06/01/2026"
   ];
 
   // disable right click on images
@@ -339,20 +498,30 @@
     });
   });
 
-  // Active nav state based on scroll position
-  const aboutEl = document.getElementById('about');
+  // active nav state based on scroll position
+  const sections = [
+    { id: "top", element: document.querySelector(".home") },
+    { id: "about", element: document.getElementById("about") },
+    { id: "photogrammetry", element: document.getElementById("photogrammetry") }
+  ];
 
-  window.addEventListener('scroll', () => {
-    const aboutTop = aboutEl.getBoundingClientRect().top;
-    const onAbout = aboutTop < window.innerHeight * 0.5;
+  window.addEventListener("scroll", () => {
+    let current = "top";
 
-    navLinks.forEach(a =>
-      a.classList.toggle(
-        'active',
-        (onAbout && a.dataset.target === 'about') ||
-        (!onAbout && a.dataset.target === 'top')
-      )
-    );
+    sections.forEach(section => {
+      const rect = section.element.getBoundingClientRect();
+
+      if (rect.top < window.innerHeight * 0.35) {
+        current = section.id;
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.toggle(
+        "active",
+        link.dataset.target === current
+      );
+    });
   });
 
 </script>
