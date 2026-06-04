@@ -460,13 +460,13 @@
     "dentate. 06/08/2025"
   ];
 
-  // disable right click on images
+  // disable right click on image
   document.addEventListener('contextmenu', (e) => {
     if (e.target.tagName === 'IMG') {
       e.preventDefault();
     }
   });
-
+  
   const gallery = document.getElementById('gallery');
 
   images.forEach((src, i) => {
