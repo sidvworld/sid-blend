@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-47M9FT98LR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-47M9FT98LR');
+</script>
+
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/x-icon" href="sb-icon.png">
@@ -398,6 +410,7 @@
     <div class="home">
       <h1>welcome</h1>
       <p>below is a brief collection of my work from the past 5 years</p>
+      <p>(note: i have not been able to include much of my commissioned work due to ownership reasons)</p>
     </div>
 
     <h2 class="section-title" id="gallery-title">gallery</h2>
@@ -431,7 +444,11 @@
 
     <h2 class="section-title" id="photogrammetry-title">photogrammetry software</h2>
     <div class="photogrammetry-card" id="photogrammetry">
-      <p><br><br><br><br><br><br><br><br><br><br><br><br></p>
+      <p>a lot of my assets need to be extracted from scenes using the aforementioned gaussian splatting model.
+        so on top of the AliceVision workflow that i use for this, i've implemented a 3D scene object segmentation pipeline in that codebase.
+        the script lets you pluck an object out of a crowded alicevision reconstruction and save it as its own 3d mesh. give it a rough box around the object, and optionally a point near the piece you want. it keeps the faces inside the box, sorts them into connected pieces, and exports your pick as a new obj file—like a digital cookie cutter for 3d scenes.
+        go check it out at my GitHub! <a href="https://github.com/sidvworld/AliceVision-SegmentationPipeline">https://github.com/sidvworld/AliceVision-SegmentationPipeline</a>
+      </p>
     </div>
   </section>
 </main>
